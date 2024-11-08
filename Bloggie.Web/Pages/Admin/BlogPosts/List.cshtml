@@ -9,34 +9,43 @@
     </div>
 </div>
 
-<div class="container">
-    <table class="table">
-        <thead>
-        <tr>
-            <td>ID</td>
-            <td>Heading</td>
-            <td>Page Title</td>
-            <td>Publish Date</td>
-            <td>Author</td>
-            <td>Visible</td>
-            <td></td>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var blogPost in Model.BlogPosts)
-        {
+@if (Model.BlogPosts != null && Model.BlogPosts.Any())
+{
+    <div class="container">
+        <table class="table">
+            <thead>
             <tr>
-                <td>@blogPost.Id</td>
-                <td>@blogPost.Heading</td>
-                <td>@blogPost.PageTitle</td>
-                <td>@blogPost.PublishDate</td>
-                <td>@blogPost.Author</td>
-                <td>@blogPost.Visible</td>
-                <td>
-                    <a href="/Admin/BlogPosts/Edit/@blogPost.Id">View</a>
-                </td>
+                <td>ID</td>
+                <td>Heading</td>
+                <td>Page Title</td>
+                <td>Publish Date</td>
+                <td>Author</td>
+                <td>Visible</td>
+                <td></td>
             </tr>
-        }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+            @foreach (var blogPost in Model.BlogPosts)
+            {
+                <tr>
+                    <td>@blogPost.Id</td>
+                    <td>@blogPost.Heading</td>
+                    <td>@blogPost.PageTitle</td>
+                    <td>@blogPost.PublishDate</td>
+                    <td>@blogPost.Author</td>
+                    <td>@blogPost.Visible</td>
+                    <td>
+                        <a href="/Admin/BlogPosts/Edit/@blogPost.Id">View</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="container">
+        <p>No Blog Posts Were Found!</p>
+    </div>
+}

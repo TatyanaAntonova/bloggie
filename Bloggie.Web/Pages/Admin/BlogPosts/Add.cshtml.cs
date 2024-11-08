@@ -14,7 +14,7 @@ public class Add(BloggieDbContext dbContext) : PageModel
     {
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         var blogPost = new BlogPost
         {
@@ -28,9 +28,9 @@ public class Add(BloggieDbContext dbContext) : PageModel
             Author = AddBlogPostRequest.Author,
             Visible = AddBlogPostRequest.Visible
         };
-        dbContext.BlogPosts.Add(blogPost);
-        dbContext.SaveChanges();
-        
+        await dbContext.BlogPosts.AddAsync(blogPost);
+        await dbContext.SaveChangesAsync();
+
         return Redirect("/Admin/BlogPosts/List");
     }
 }

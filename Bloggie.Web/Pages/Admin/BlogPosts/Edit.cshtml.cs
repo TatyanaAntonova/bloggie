@@ -9,14 +9,14 @@ public class Edit(BloggieDbContext dbContext) : PageModel
 {
     [BindProperty] public BlogPost BlogPost { get; set; }
 
-    public void OnGet(Guid id)
+    public async Task OnGet(Guid id)
     {
-        BlogPost = dbContext.BlogPosts.Find(id);
+        BlogPost = await dbContext.BlogPosts.FindAsync(id);
     }
 
-    public IActionResult OnPostEdit(BlogPost blogPost)
+    public async Task<IActionResult> OnPostEdit(BlogPost blogPost)
     {
-        var existingBlogPost = dbContext.BlogPosts.Find(BlogPost.Id);
+        var existingBlogPost = await dbContext.BlogPosts.FindAsync(BlogPost.Id);
         if (existingBlogPost != null)
         {
             existingBlogPost.Heading = BlogPost.Heading;
@@ -28,22 +28,22 @@ public class Edit(BloggieDbContext dbContext) : PageModel
             existingBlogPost.PublishDate = BlogPost.PublishDate;
             existingBlogPost.Author = BlogPost.Author;
             existingBlogPost.Visible = BlogPost.Visible;
-            
-            dbContext.SaveChanges();
         }
-        
+
+        await dbContext.SaveChangesAsync();
         return RedirectToPage("/Admin/BlogPosts/List");
     }
 
-    public IActionResult OnPostDelete()
+    public async Task<IActionResult> OnPostDelete()
     {
-        var existingBlogPost = dbContext.BlogPosts.Find(BlogPost.Id);
+        var existingBlogPost = await dbContext.BlogPosts.FindAsync(BlogPost.Id);
         if (existingBlogPost != null)
         {
             dbContext.BlogPosts.Remove(existingBlogPost);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
+            return RedirectToPage("/Admin/BlogPosts/List");
         }
-        
-        return RedirectToPage("/Admin/BlogPosts/List");
+
+        return Page();
     }
 }
