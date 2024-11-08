@@ -6,8 +6,8 @@ Thumbs.db
 .DS_Store?
 
 # ASP.NET specific
-DIARY/bin/
-obj/
+/Bloggie.Web/bin/
+/Bloggie.Web/obj/
 *.user
 *.suo
 *.userosscache
@@ -15,7 +15,7 @@ obj/
 
 # Rider files
 .idea/
-.idea/*
+.idea/**
 .idea_modules/
 
 # Visual Studio for Mac specific
