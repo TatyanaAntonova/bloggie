@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 builder.Services.AddDbContext<BloggieDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("BloggieDbConnectionString")));
@@ -29,5 +30,6 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
     .WithStaticAssets();
+app.MapControllers();
 
 app.Run();
