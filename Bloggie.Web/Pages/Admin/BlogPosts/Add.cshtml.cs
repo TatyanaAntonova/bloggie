@@ -11,6 +11,9 @@ public class Add(IBlogPostRepository blogPostRepository) : PageModel
 {
     [BindProperty] public AddBlogPost AddBlogPostRequest { get; set; }
 
+    [BindProperty]
+    public IFormFile FeaturedImage { get; set; }
+
     public void OnGet()
     {
     }

@@ -8,6 +8,7 @@ namespace Bloggie.Web.Pages.Admin.BlogPosts;
 public class Edit(IBlogPostRepository blogPostRepository) : PageModel
 {
     [BindProperty] public BlogPost BlogPost { get; set; }
+    [BindProperty] public IFormFile FeaturedImage { get; set; }
 
     public async Task OnGet(Guid id)
     {
