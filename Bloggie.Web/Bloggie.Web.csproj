@@ -18,8 +18,4 @@
       <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0-rc.2.24508.2" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Pages\Admin\Assistant\" />
-    </ItemGroup>
-
 </Project>
