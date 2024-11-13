@@ -33,26 +33,30 @@
                 <input type="text" class="form-control" id="shortDescription" asp-for="AddBlogPostRequest.ShortDescription">
             </div>
 
+            <!-- Featured Image Upload Section -->
             <div class="mb-3">
-                <label for="featuredImageUpload" class="form-label">Featured image upload</label>
-                <input type="file" id="featuredImageUpload" asp-for="FeaturedImage"/>
+                <label for="featuredImageUpload" class="form-label">Featured Image Upload </label>
+                <!-- Hidden file input -->
+                <input type="file" id="featuredImageUpload" asp-for="FeaturedImage" style="display: none;"/>
 
-                <img src="" id="featuredImageDisplay" style="display:none;width:300px;"/>
+                <!-- Custom button styled with Bootstrap -->
+                <button type="button" class="btn btn-secondary" id="customFileButton">Upload Image</button>
             </div>
 
+            <!-- Capture Photo Section -->
             <div class="mb-3">
+                <label class="form-label">Or Capture Photo</label>
+                <button class="btn btn-secondary" type="button" id="capturePhotoButton">Capture Photo</button>
+            </div>
+
+            <!-- Camera Capture Display -->
+            <div class="mb-3" id="cameraContainer" style="display: none;">
                 <div class="camera-container">
                     <video id="video" autoplay></video>
-                    <label for="captureButton" class="form-label">Capture photo</label>
-                    <button class="btn" type="button" id="captureButton">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
-                            <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
-                            <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
-                        </svg>
-                    </button>
+                    <button class="btn btn-primary" type="button" id="captureButton">Capture</button>
                     <canvas id="canvas" style="display: none;"></canvas>
                     <div>
-                        <img id="photo" alt="Captured Photo" style="display: none;"/>
+                        <img id="photo" alt="Captured Photo" style="display: none; width: 300px;"/>
                     </div>
                 </div>
             </div>
@@ -60,6 +64,8 @@
             <div class="mb-3">
                 <label for="featureImageUrl" class="form-label">Featured Image Url</label>
                 <input type="text" class="form-control" id="featureImageUrl" asp-for="AddBlogPostRequest.FeatureImageUrl">
+                <!-- Display the uploaded image preview -->
+                <img src="" id="featuredImageDisplay" style="display:none; width:300px; margin-top: 10px;"/>
             </div>
 
             <div class="mb-3">
@@ -92,43 +98,77 @@
 @section Scripts
 {
     <script>
-        var editor = new FroalaEditor('#content',{
-            imageUploadURL: '/api/images'
-        });
+    const featuredImageUploadElement = document.getElementById('featuredImageUpload');
+    const customFileButton = document.getElementById('customFileButton');
+    const featuredImageUrl = document.getElementById('featureImageUrl');
+    const featuredImageDisplay = document.getElementById('featuredImageDisplay');
+    
+    var editor = new FroalaEditor('#content',{
+        imageUploadURL: '/api/images'
+    });
+    
+    // Trigger file input when custom button is clicked
+    customFileButton.addEventListener('click', () => {
+        featuredImageUploadElement.click();
+    });
 
-        const featuredImageUploadElement = document.getElementById('featuredImageUpload');
-        const featuredImageUrl = document.getElementById('featureImageUrl');
-        const featuredImageDisplay = document.getElementById('featuredImageDisplay');
-        
-        async function uploadFeaturedImage(e) {
-            console.log(e.target.files[0]);
-            
-            let data = new FormData();
-            data.append('file', e.target.files[0]);
-            
-            await fetch('/api/images', {
+    // Upload image (file or captured) and update URL and display
+    async function uploadFeaturedImage(imageData) {
+        let data = new FormData();
+
+        // Check if the image is a File or a Data URL (base64)
+        if (imageData instanceof File) {
+            data.append('file', imageData);  // for file upload
+        } else {
+            // Convert Data URL to Blob for captured image
+            const blob = await fetch(imageData).then(res => res.blob());
+            data.append('file', blob, 'captured_image.png');
+        }
+
+        try {
+            const response = await fetch('/api/images', {
                 method: 'POST',
-                headers: {
-                   'Accept': '*/*',
-                 },
+                headers: { 'Accept': '*/*' },
                 body: data
-            }).then(response => response.json())
-                .then(result => {
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Upload result:", result); // Debugging
+
+                if (result.link) {
                     featuredImageUrl.value = result.link;
+                    featuredImageDisplay.src = result.link;
                     featuredImageDisplay.style.display = 'block';
-                    featuredImageDisplay.src = result.link;            
-                });
-        }        
-        
-        featuredImageUploadElement.addEventListener('change', uploadFeaturedImage)
-    </script>
+                } else {
+                    console.error("No link found in the response:", result);
+                    alert("Image upload failed. Please try again.");
+                }
+            } else {
+                console.error("Upload failed with status:", response.status);
+                alert("Image upload failed. Please check your server.");
+            }
+        } catch (error) {
+            console.error("Error during image upload:", error);
+            alert("An error occurred during image upload. Please try again.");
+        }
+    }
 
-    <script>
-        const video = document.getElementById('video');
-        const captureButton = document.getElementById('captureButton');
-        const canvas = document.getElementById('canvas');
-        const photo = document.getElementById('photo');
+    // Event listener for file upload
+    featuredImageUploadElement.addEventListener('change', (e) => {
+        uploadFeaturedImage(e.target.files[0]);
+    });
 
+    // Capture Photo Script
+    const capturePhotoButton = document.getElementById('capturePhotoButton');
+    const cameraContainer = document.getElementById('cameraContainer');
+    const video = document.getElementById('video');
+    const captureButton = document.getElementById('captureButton');
+    const canvas = document.getElementById('canvas');
+    const photo = document.getElementById('photo');
+
+    capturePhotoButton.addEventListener('click', () => {
+        cameraContainer.style.display = 'block';
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
@@ -137,16 +177,20 @@
                 console.error("Error accessing camera:", error);
                 alert("Could not access the camera. Please check your permissions.");
             });
+    });
 
-        captureButton.addEventListener('click', () => {
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    captureButton.addEventListener('click', async () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const imageDataURL = canvas.toDataURL('image/png');
-            photo.src = imageDataURL;
-            photo.style.display = 'block';
-        });
-    </script>
+        const imageDataURL = canvas.toDataURL('image/png');
+        photo.src = imageDataURL;
+        photo.style.display = 'block';
+
+        // Upload captured image data URL
+        await uploadFeaturedImage(imageDataURL);
+    });
+</script>
 }
