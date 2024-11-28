@@ -1,4 +1,5 @@
-using Bloggie.Web.Data;
+using System.Text.Json;
+using Bloggie.Web.Enums;
 using Bloggie.Web.Models.Domain;
 using Bloggie.Web.Models.ViewModels;
 using Bloggie.Web.Repositories;
@@ -11,8 +12,7 @@ public class Add(IBlogPostRepository blogPostRepository) : PageModel
 {
     [BindProperty] public AddBlogPost AddBlogPostRequest { get; set; }
 
-    [BindProperty]
-    public IFormFile FeaturedImage { get; set; }
+    [BindProperty] public IFormFile FeaturedImage { get; set; }
 
     public void OnGet()
     {
@@ -33,6 +33,13 @@ public class Add(IBlogPostRepository blogPostRepository) : PageModel
             Visible = AddBlogPostRequest.Visible
         };
         await blogPostRepository.CreateAsync(blogPost);
+
+        var notification = new Notification
+        {
+            Message = "Blog post has been created successfully.",
+            Type = NotificationType.Success
+        };
+        TempData["Notification"] = JsonSerializer.Serialize(notification);
 
         return Redirect("/Admin/BlogPosts/List");
     }
