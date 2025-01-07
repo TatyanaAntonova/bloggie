@@ -50,6 +50,8 @@ public class AuthDbContext : IdentityDbContext
             Id = superAdminUserid,
             UserName = "superadmin@gmail.com",
             Email = "superadmin@gmail.com",
+            NormalizedEmail = "superadmin@gmail.com".ToUpper(),
+            NormalizedUserName = "superadmin@gmail.com".ToUpper()
         };
 
         superAdminUser.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(superAdminUser, "password");

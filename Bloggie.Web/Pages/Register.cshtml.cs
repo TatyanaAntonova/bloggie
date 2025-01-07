@@ -8,11 +8,11 @@ namespace Bloggie.Web.Pages;
 
 public class Register : PageModel
 {
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<IdentityUser> _userManager;
 
     public Register(UserManager<IdentityUser> userManager)
     {
-        this.userManager = userManager;
+        _userManager = userManager;
     }
 
     [BindProperty] public RegisterView RegisterViewModel { get; set; }
@@ -28,17 +28,21 @@ public class Register : PageModel
             UserName = RegisterViewModel.Username,
             Email = RegisterViewModel.Email,
         };
-        var identityResult = await userManager.CreateAsync(user, RegisterViewModel.Password);
+        var identityResult = await _userManager.CreateAsync(user, RegisterViewModel.Password);
 
         if (identityResult.Succeeded)
         {
-            ViewData["Notification"] = new Notification
+            var addRolesResult = await _userManager.AddToRoleAsync(user, "User");
+            if (addRolesResult.Succeeded)
             {
-                Type = NotificationType.Success,
-                Message = "Registration Successful",
-            };
+                ViewData["Notification"] = new Notification
+                {
+                    Type = NotificationType.Success,
+                    Message = "Registration Successful",
+                };
 
-            return Page();
+                return Page();
+            }
         }
 
         ViewData["Notification"] = new Notification
