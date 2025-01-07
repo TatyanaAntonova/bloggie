@@ -46,7 +46,7 @@ public class Register : PageModel
             Type = NotificationType.Error,
             Message = "Something went wrong. Try again later.",
         };
-
+        Console.Error.WriteLine(identityResult.Errors.First().Description);
         return Page();
     }
 }

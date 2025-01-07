@@ -1,5 +1,8 @@
 @page
-@model Register
+@model Bloggie.Web.Pages.Login
+
+@{
+}
 
 <div class="container mx-auto">
     <div class="row justify-content-center">
@@ -12,21 +15,16 @@
             <form method="post">
                 <div class="mb-3">
                     <label class="form-label">User name</label>
-                    <input class="form-control" type="text" asp-for="RegisterViewModel.Username"/>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input class="form-control" type="email" asp-for="RegisterViewModel.Email"/>
+                    <input class="form-control" type="text" asp-for="LoginViewModel.Username"/>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input class="form-control" type="password" asp-for="RegisterViewModel.Password"/>
+                    <input class="form-control" type="password" asp-for="LoginViewModel.Password"/>
                 </div>
 
                 <div class="mb-3">
-                    <button type="submit" class="btn bg-dark text-light">Register</button>
+                    <button type="submit" class="btn bg-dark text-light">Login</button>
                 </div>
             </form>
         </div>

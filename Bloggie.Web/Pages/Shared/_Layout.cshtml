@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -9,14 +12,18 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
 
     <link rel="stylesheet" href="~/Bloggie.Web.styles.css" asp-append-version="true"/>
-    <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet' type='text/css'/><script type='text/javascript' src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
+    <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet'
+          type='text/css'/>
+    <script type='text/javascript'
+            src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
 </head>
 <body>
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow">
         <div class="container">
             <a class="navbar-brand" asp-area="" asp-page="/Index">Bloggie.Web</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -40,10 +47,19 @@
                         </ul>
                     </li>
                 </ul>
-                <div class="d-flex">
-                    <a href="/login" class="btn bg-light text-dark me-3">Login</a>
-
-                    <a href="/register" class="btn bg-light text-dark me-3">Register</a>
+                <div class="d-flex align-items-center text-light">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="me-3 text-light">
+                            @User.Identity?.Name
+                        </div>
+                        <a href="/logout" class="btn bg-light text-dark me-3">Logout</a>
+                    }
+                    else
+                    {
+                        <a href="/login" class="btn bg-light text-dark me-3">Login</a>
+                        <a href="/register" class="btn bg-light text-dark me-3">Register</a>
+                    }
                 </div>
             </div>
         </div>
